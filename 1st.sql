@@ -17,7 +17,7 @@ select authorid,count(*) from book group by authorid;
 select * from student where usn in( select usn
 from borrow group by usn having count(*)>2);
 
-select * from studentwhere usn in( select usn
+select * from student where usn in( select usn
 from borrow natural join book group by usn
 having count(distinct authorid)>1);
 
