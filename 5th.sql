@@ -1,3 +1,21 @@
+
+create table tourist_place (tpid number primary key, history
+varchar(20), kilometers number(3),state varchar(20),tpname varchar(20));
+
+create table tourist(tid number primary key, country varchar(20),
+age number,tname varchar(20));
+
+create table visits (tpid number(3) references
+tourist_place(tpid), tid number references
+tourist(tid),
+vdate date,
+primary key (tpid, tid));
+
+create table email
+(tid number references tourist(tid),
+email varchar (20), primary key (tid, email));
+
+
 select state from tourist_place group by state 
 having count(*)=(select max(count(*)) from tourist_placegroup by state);
 
