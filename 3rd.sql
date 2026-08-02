@@ -14,6 +14,11 @@ INSERT INTO player VALUES (3, 'dhoni', 30, 124);
 INSERT INTO player VALUES (4, 'raina', 30, 125);
 INSERT INTO player VALUES (5, 'kohli', 23, 126);
 
+ALTER TABLE team
+ADD CONSTRAINT fk_captain
+FOREIGN KEY (captain_pid)
+REFERENCES player(pid);
+
 create table stadium (sid int primary key, sname varchar(20),
 picode number(8), city varchar(20), area varchar(20));
 INSERT INTO stadium VALUES (111, 'chinnaswamy', 56001, 'bangalore', 'mg road');
@@ -22,16 +27,16 @@ INSERT INTO stadium VALUES (333, 'international', 38883, 'chennai', 'trnagar');
 INSERT INTO stadium VALUES (444, 'ksca', 560098, 'bangalore', 'peenya');
 INSERT INTO stadium VALUES (555, 'csca', 567772, 'cochin', 'beach road');
 
-create table match (mid int primary key, mdate date,time varchar(6),sid int references stadium(sid),
+create table matches (mid int primary key, mdate date,time varchar(6),sid int references stadium(sid),
 team1_id int references team(tid),team2_id int references team(tid),
 winning_team_id int references team(tid),man_of_match int references player(pid));
-INSERT INTO match VALUES (101, '10-JAN-17', '10am', 111, 123, 124, 123, 1);
-INSERT INTO match VALUES (102, '11-JAN-17', '9am', 222, 124, 126, 126, 5);
-INSERT INTO match VALUES (103, '12-JAN-17', '11am', 111, 125, 126, 126, 5);
-INSERT INTO match VALUES (104, '10-JAN-17', '12am', 111, 125, 123, 123, 1);
-INSERT INTO match VALUES (105, '11-JAN-17', '9am', 222, 124, 126, 126, 5);
+INSERT INTO matches VALUES (101, '10-JAN-17', '10am', 111, 123, 124, 123, 1);
+INSERT INTO matches VALUES (102, '11-JAN-17', '9am', 222, 124, 126, 126, 5);
+INSERT INTO matches VALUES (103, '12-JAN-17', '11am', 111, 125, 126, 126, 5);
+INSERT INTO matches VALUES (104, '10-JAN-17', '12am', 111, 125, 123, 123, 1);
+INSERT INTO matches VALUES (105, '11-JAN-17', '9am', 222, 124, 126, 126, 5);
 
-create table player_phone(pid int references player(pid), phone int,
+create table player_phone(pid int references player(pid), phone NUMBER(10),
 primary key(pid,phone));
 INSERT INTO player_phone VALUES (1, 998882928);
 INSERT INTO player_phone VALUES (2, 877563733);
@@ -58,9 +63,7 @@ group by winning_team_id
 having count(*)=(select max(count(*))
 from match group by winning_team_id));
 
-select tname from team where tid in(
-select winning_team_id from match
-group by winning_team_id,sid
-having count(*) in(select count(*)
-from match group by winning_team_id));
-
+SELECT tname FROM team WHERE tid IN (
+    SELECT winning_team_id FROM match
+    GROUP BY winning_team_id
+    HAVING COUNT(DISTINCT sid)=1);
